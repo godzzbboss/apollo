@@ -36,7 +36,6 @@
 #include "modules/map/pnc_map/path.h"
 #include "modules/planning/common/planning_context.h"
 #include "modules/planning/common/planning_gflags.h"
-#include "modules/routing/common/routing_gflags.h"
 
 /**
  * @namespace apollo::planning
@@ -114,7 +113,6 @@ void ReferenceLineProvider::UpdateVehicleState(
 }
 
 bool ReferenceLineProvider::Start() {
-  is_stop_ = false;
   if (FLAGS_use_navigation_mode) {
     return true;
   }
@@ -127,13 +125,6 @@ bool ReferenceLineProvider::Start() {
     task_future_ = cyber::Async(&ReferenceLineProvider::GenerateThread, this);
   }
   return true;
-}
-
-void ReferenceLineProvider::Wait() {
-  is_stop_ = true;
-  if (FLAGS_enable_reference_line_provider_thread) {
-    task_future_.wait();
-  }
 }
 
 void ReferenceLineProvider::Stop() {
@@ -197,7 +188,6 @@ void ReferenceLineProvider::UpdateReferenceLine(
 
 void ReferenceLineProvider::GenerateThread() {
   while (!is_stop_) {
-    is_reference_line_updated_ = true;
     static constexpr int32_t kSleepTime = 50;  // milliseconds
     cyber::SleepFor(std::chrono::milliseconds(kSleepTime));
     const double start_time = Clock::NowInSeconds();
@@ -216,6 +206,7 @@ void ReferenceLineProvider::GenerateThread() {
     const double end_time = Clock::NowInSeconds();
     std::lock_guard<std::mutex> lock(reference_lines_mutex_);
     last_calculation_time_ = end_time - start_time;
+    is_reference_line_updated_ = true;
   }
 }
 

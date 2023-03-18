@@ -33,9 +33,18 @@ namespace dreamview {
 
 class HMI {
  public:
+  using DvCallback = std::function<nlohmann::json(
+      const std::string &function_name, const nlohmann::json &param_json)>;
   HMI(WebSocketHandler *websocket, MapService *map_service);
-  void Start();
+  void Start(DvCallback callback_api);
   void Stop();
+  bool UpdateScenarioSetToStatus(const std::string &scenario_set_id,
+                                 const std::string &scenario_set_name);
+  bool UpdateDynamicModelToStatus(const std::string &dynamic_model_name);
+  bool UpdateRecordToStatus();
+  bool UpdateVehicleToStatus();
+  bool UpdateCameraChannelToStatus(const std::string& channel_name);
+  bool UpdatePointChannelToStatus(const std::string& channel_name);
 
  private:
   // Send VehicleParam to the given conn, or broadcast if conn is null.

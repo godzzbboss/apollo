@@ -22,11 +22,12 @@ cc_library(
     ],
     copts = ["-DMODULE_NAME=\\\"planning\\\""],
     deps = [
-        "//cyber/common:log",
+        "//cyber",
+        "//modules/common_msgs/planning_msgs:planning_cc_proto",
+        "//modules/common/math",
+        "//modules/common/util:util_tool",
         "//modules/common/util",
-        "//modules/common/util:factory",
         "//modules/planning/common/util:util_lib",
-        "//modules/planning/proto:planning_cc_proto",
         "//modules/planning/scenarios:scenario",
         "//modules/planning/scenarios/common:stage_intersection_cruise_impl",
         "//modules/planning/scenarios/util:scenario_util_lib",
@@ -46,6 +47,7 @@ cc_test(
         ":stop_sign_unprotected_scenario",
         "@com_google_googletest//:gtest_main",
     ] + if_gpu(["@local_config_cuda//cuda:cudart"]),
+    linkstatic = True,
 )
 
 cc_test(
@@ -60,6 +62,7 @@ cc_test(
         ":stop_sign_unprotected_scenario",
         "@com_google_googletest//:gtest_main",
     ] + if_gpu(["@local_config_cuda//cuda:cudart"]),
+    linkstatic = True,
 )
 
 cc_test(
@@ -74,6 +77,7 @@ cc_test(
         ":stop_sign_unprotected_scenario",
         "@com_google_googletest//:gtest_main",
     ] + if_gpu(["@local_config_cuda//cuda:cudart"]),
+    linkstatic = True,
 )
 
 cc_test(
@@ -88,6 +92,7 @@ cc_test(
         ":stop_sign_unprotected_scenario",
         "@com_google_googletest//:gtest_main",
     ] + if_gpu(["@local_config_cuda//cuda:cudart"]),
+    linkstatic = True,
 )
 
 cpplint()

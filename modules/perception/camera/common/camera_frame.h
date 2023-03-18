@@ -30,6 +30,9 @@ namespace camera {
 
 class BaseCalibrationService;
 
+
+enum class TrackState{ Predict, Associate2D, Associate3D, Track};
+
 struct CameraFrame {
   // timestamp
   double timestamp = 0.0;
@@ -57,12 +60,22 @@ struct CameraFrame {
   std::vector<base::TrafficLightPtr> traffic_lights;
   // camera intrinsics
   Eigen::Matrix3f camera_k_matrix = Eigen::Matrix3f::Identity();
+  // camera extrinsics
+  Eigen::Matrix4d camera_extrinsic = Eigen::Matrix4d::Identity();
   // narrow to obstacle projected_matrix
   Eigen::Matrix3d project_matrix = Eigen::Matrix3d::Identity();
   // camera to world pose
   Eigen::Affine3d camera2world_pose = Eigen::Affine3d::Identity();
+
+  // todo(zero): Add stage status to distinguish different stages
+  // stage status
+  // StageStatus stage_status;
+  TrackState track_state = TrackState::Predict;
+
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 } EIGEN_ALIGN16;  // struct CameraFrame
+
+
 
 }  // namespace camera
 }  // namespace perception

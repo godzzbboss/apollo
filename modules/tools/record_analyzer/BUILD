@@ -1,6 +1,14 @@
 load("@rules_python//python:defs.bzl", "py_binary", "py_library")
+load("//tools/install:install.bzl", "install")
 
 package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "readme",
+    srcs = [
+        "README.md",
+    ],
+)
 
 py_library(
     name = "lidar_endtoend_analyzer",
@@ -18,12 +26,12 @@ py_binary(
         ":module_control_analyzer",
         ":module_planning_analyzer",
         "//cyber/python/cyber_py3:record",
-        "//modules/canbus/proto:chassis_py_pb2",
-        "//modules/control/proto:control_cmd_py_pb2",
-        "//modules/drivers/proto:pointcloud_py_pb2",
-        "//modules/perception/proto:perception_obstacle_py_pb2",
-        "//modules/planning/proto:planning_py_pb2",
-        "//modules/prediction/proto:prediction_obstacle_py_pb2",
+        "//modules/common_msgs/chassis_msgs:chassis_py_pb2",
+        "//modules/common_msgs/control_msgs:control_cmd_py_pb2",
+        "//modules/common_msgs/sensor_msgs:pointcloud_py_pb2",
+        "//modules/common_msgs/perception_msgs:perception_obstacle_py_pb2",
+        "//modules/common_msgs/planning_msgs:planning_py_pb2",
+        "//modules/common_msgs/prediction_msgs:prediction_obstacle_py_pb2",
     ],
 )
 
@@ -41,7 +49,7 @@ py_library(
     name = "module_planning_analyzer",
     srcs = ["module_planning_analyzer.py"],
     deps = [
-        "//modules/planning/proto:planning_py_pb2",
+        "//modules/common_msgs/planning_msgs:planning_py_pb2",
         "//modules/tools/record_analyzer/common:distribution_analyzer",
         "//modules/tools/record_analyzer/common:error_code_analyzer",
         "//modules/tools/record_analyzer/common:error_msg_analyzer",
@@ -54,4 +62,18 @@ py_library(
         "//modules/tools/record_analyzer/metrics:lon_acceleration",
         "//modules/tools/record_analyzer/metrics:reference_line",
     ],
+)
+
+install(
+    name = "install",
+    data = [":readme"],
+    data_dest = "tools/record_analyzer",
+    py_dest = "tools/record_analyzer",
+    targets = [
+        ":main",
+    ],
+    deps = [
+        "//modules/tools/record_analyzer/tools:install",
+        "//modules/tools/record_analyzer/common:install",
+    ]
 )

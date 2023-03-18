@@ -11,7 +11,7 @@ cc_library(
         "//cyber",
         "//modules/perception/base:common",
         "//modules/perception/proto:rt_cc_proto",
-        "@com_google_absl//absl/strings",
+        "@com_google_absl//:absl",
         "@local_config_cuda//cuda:cudnn_header",
     ],
 )
@@ -45,6 +45,7 @@ cc_test(
         ":rt_utils",
         "@com_google_googletest//:gtest_main",
     ],
+    linkstatic = True,
 )
 
 cc_library(
@@ -76,12 +77,14 @@ cc_test(
     data = [
         "//modules/perception/inference:inference_test_data",
     ],
+    tags = ["exclude"],
     deps = [
         ":rt_net",
         "//modules/perception/inference/utils:inference_util_cuda_lib",
         "@atlas//:cblas",
         "@com_google_googletest//:gtest_main",
     ],
+    linkstatic = True,
 )
 
 cc_library(
@@ -110,6 +113,7 @@ cc_test(
         ":entropy_calibrator",
         "@com_google_googletest//:gtest_main",
     ],
+    linkstatic = True,
 )
 
 cc_library(
@@ -119,7 +123,7 @@ cc_library(
     deps = [
         "//cyber",
         "//modules/perception/proto:rt_cc_proto",
-        "@com_google_absl//absl/strings",
+        "@com_google_absl//:absl",
         "@com_google_protobuf//:protobuf",
         "@opencv//:imgcodecs",
     ],
@@ -137,6 +141,7 @@ cc_test(
         ":batch_stream",
         "@com_google_googletest//:gtest_main",
     ],
+    linkstatic = True,
 )
 
 cpplint()

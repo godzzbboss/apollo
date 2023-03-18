@@ -21,9 +21,9 @@
 #include "absl/strings/str_split.h"
 #include "google/protobuf/util/json_util.h"
 
-#include "modules/canbus/proto/chassis.pb.h"
-#include "modules/common/proto/geometry.pb.h"
-#include "modules/common/proto/vehicle_signal.pb.h"
+#include "modules/common_msgs/basic_msgs/geometry.pb.h"
+#include "modules/common_msgs/basic_msgs/vehicle_signal.pb.h"
+#include "modules/common_msgs/chassis_msgs/chassis.pb.h"
 #include "modules/dreamview/proto/simulation_world.pb.h"
 
 #include "cyber/common/file.h"
@@ -328,9 +328,9 @@ void SimulationWorldService::InitWriters() {
     // reliable transfer
     qos->set_reliability(
         apollo::cyber::proto::QosReliabilityPolicy::RELIABILITY_RELIABLE);
-    // when writer find new readers, send all its history messsage
+    // Don't send the history message when new readers are found.
     qos->set_durability(
-        apollo::cyber::proto::QosDurabilityPolicy::DURABILITY_TRANSIENT_LOCAL);
+        apollo::cyber::proto::QosDurabilityPolicy::DURABILITY_SYSTEM_DEFAULT);
     routing_request_writer_ =
         node_->CreateWriter<RoutingRequest>(routing_request_attr);
   }

@@ -2,6 +2,7 @@
 load("@rules_proto//proto:defs.bzl", "proto_library")
 load("@rules_cc//cc:defs.bzl", "cc_proto_library")
 load("//tools:python_rules.bzl", "py_proto_library")
+load("//tools/install:install.bzl", "install", "install_files")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -24,75 +25,10 @@ py_proto_library(
     ],
 )
 
-cc_proto_library(
-    name = "audio_cc_proto",
-    deps = [
-        ":audio_proto",
-    ],
-)
-
-proto_library(
-    name = "audio_proto",
-    srcs = ["audio.proto"],
-    deps = [
-        ":audio_common_proto",
-        "//modules/common/proto:geometry_proto",
-        "//modules/common/proto:header_proto",
-    ],
-)
-
-py_proto_library(
-    name = "audio_py_pb2",
-    deps = [
-        ":audio_common_py_pb2",
-        ":audio_proto",
-        "//modules/common/proto:geometry_py_pb2",
-        "//modules/common/proto:header_py_pb2",
-    ],
-)
-
-cc_proto_library(
-    name = "audio_common_cc_proto",
-    deps = [
-        ":audio_common_proto",
-    ],
-)
-
-proto_library(
-    name = "audio_common_proto",
-    srcs = ["audio_common.proto"],
-)
-
-py_proto_library(
-    name = "audio_common_py_pb2",
-    deps = [
-        ":audio_common_proto",
-    ],
-)
-
-cc_proto_library(
-    name = "audio_event_cc_proto",
-    deps = [
-        ":audio_event_proto",
-    ],
-)
-
-proto_library(
-    name = "audio_event_proto",
-    srcs = ["audio_event.proto"],
-    deps = [
-        ":audio_common_proto",
-        "//modules/common/proto:header_proto",
-        "//modules/localization/proto:pose_proto",
-    ],
-)
-
-py_proto_library(
-    name = "audio_event_py_pb2",
-    deps = [
-        ":audio_common_py_pb2",
-        ":audio_event_proto",
-        "//modules/common/proto:header_py_pb2",
-        "//modules/localization/proto:pose_py_pb2",
-    ],
+install_files(
+    name = "py_pb_audio",
+    dest = "audio/python/modules/audio/proto",
+    files = [
+        "audio_conf_py_pb2",
+    ]
 )

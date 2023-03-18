@@ -1,15 +1,47 @@
-load("@rules_cc//cc:defs.bzl", "cc_library", "cc_test")
+load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library", "cc_test")
 load("//tools:cpplint.bzl", "cpplint")
+load("//tools/install:install.bzl", "install")
 
-package(default_visibility = ["//visibility:public"])
+install(
+    name = "install",
+    library_dest = "common/lib",
+    data_dest = "common",
+    targets = [
+        ":libfilters.so",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+
+cc_binary(
+    name = "libfilters.so",
+    linkshared = True,
+    linkstatic = True,
+    deps = [
+        ":digital_filter_coefficients",
+        ":digital_filter",
+        ":mean_filter",
+    ],
+)
+
+cc_library(
+    name = "filters",
+    srcs = ["libfilters.so"],
+    hdrs = [
+        "digital_filter_coefficients.h",
+        "digital_filter.h",
+        "mean_filter.h",
+    ],
+    visibility = ["//visibility:public"],
+)
 
 cc_library(
     name = "digital_filter",
     srcs = ["digital_filter.cc"],
     hdrs = ["digital_filter.h"],
+    alwayslink = True,
     deps = [
-        ":digital_filter_coefficients",
-        "//cyber/common:log",
+        "//cyber:cyber",
     ],
 )
 
@@ -17,8 +49,9 @@ cc_library(
     name = "mean_filter",
     srcs = ["mean_filter.cc"],
     hdrs = ["mean_filter.h"],
+    alwayslink = True,
     deps = [
-        "//cyber/common:log",
+        "//cyber:cyber",
     ],
 )
 
@@ -26,8 +59,9 @@ cc_library(
     name = "digital_filter_coefficients",
     srcs = ["digital_filter_coefficients.cc"],
     hdrs = ["digital_filter_coefficients.h"],
+    alwayslink = True,
     deps = [
-        "//cyber",
+        "//cyber:cyber",
     ],
 )
 
@@ -37,10 +71,9 @@ cc_test(
     srcs = ["digital_filter_test.cc"],
     deps = [
         ":digital_filter",
-        ":digital_filter_coefficients",
-        "//cyber",
         "@com_google_googletest//:gtest_main",
     ],
+    linkstatic = True,
 )
 
 cc_test(
@@ -51,6 +84,7 @@ cc_test(
         ":mean_filter",
         "@com_google_googletest//:gtest_main",
     ],
+    linkstatic = True,
 )
 
 cc_test(
@@ -59,7 +93,6 @@ cc_test(
     srcs = ["digital_filter_coefficients_test.cc"],
     deps = [
         ":digital_filter_coefficients",
-        "//cyber",
         "@com_google_googletest//:gtest_main",
     ],
 )

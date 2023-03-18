@@ -19,7 +19,7 @@ cc_library(
     srcs = ["file_utility.cc"],
     hdrs = ["file_utility.h"],
     deps = [
-        "//cyber/common:log",
+        "//cyber",
         "@boost",
         "@com_github_google_glog//:glog",
         "@eigen",
@@ -44,7 +44,7 @@ cc_library(
     hdrs = ["frame_transform.h"],
     deps = [
         "//cyber",
-        "@com_google_absl//absl/strings",
+        "@com_google_absl//:absl",
         "@eigen",
         "@proj",
     ],
@@ -72,7 +72,7 @@ cc_library(
         "base_map_cache.h",
     ],
     deps = [
-        "//modules/common/util:lru_cache",
+        "//modules/common/util:util_tool",
     ],
 )
 
@@ -85,6 +85,7 @@ cc_test(
         "//modules/localization/msf/common/util:compression",
         "@com_google_googletest//:gtest_main",
     ],
+    linkstatic = True,
 )
 
 cc_test(
@@ -96,6 +97,7 @@ cc_test(
         "//modules/localization/msf/common/util",
         "@com_google_googletest//:gtest_main",
     ],
+    linkstatic = True,
 )
 
 filegroup(
@@ -114,6 +116,7 @@ cc_test(
         "@boost",
         "@com_google_googletest//:gtest_main",
     ],
+    linkstatic = True,
 )
 
 cc_test(
@@ -132,9 +135,10 @@ cc_test(
     srcs = ["base_map_cache_test.cc"],
     deps = [
         ":base_map_cache",
-        "//cyber/common",
+        "//cyber",
         "@com_google_googletest//:gtest_main",
     ],
+    linkstatic = True,
 )
 
 cpplint()

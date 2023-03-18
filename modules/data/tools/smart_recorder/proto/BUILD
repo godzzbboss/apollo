@@ -2,6 +2,7 @@
 load("@rules_proto//proto:defs.bzl", "proto_library")
 load("@rules_cc//cc:defs.bzl", "cc_proto_library")
 load("//tools:python_rules.bzl", "py_proto_library")
+load("//tools/install:install.bzl", "install", "install_files")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -24,25 +25,10 @@ py_proto_library(
     ],
 )
 
-cc_proto_library(
-    name = "smart_recorder_status_cc_proto",
-    deps = [
-        ":smart_recorder_status_proto",
-    ],
-)
-
-proto_library(
-    name = "smart_recorder_status_proto",
-    srcs = ["smart_recorder_status.proto"],
-    deps = [
-        "//modules/common/proto:header_proto",
-    ],
-)
-
-py_proto_library(
-    name = "smart_recorder_status_py_pb2",
-    deps = [
-        ":smart_recorder_status_proto",
-        "//modules/common/proto:header_py_pb2",
-    ],
+install_files(
+    name = "py_pb_data_tools",
+    dest = "data/python/modules/data/tools/smart_recorder/proto",
+    files = [
+        "smart_recorder_triggers_py_pb2",
+    ]
 )

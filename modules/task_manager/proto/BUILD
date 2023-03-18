@@ -2,8 +2,17 @@
 load("@rules_proto//proto:defs.bzl", "proto_library")
 load("@rules_cc//cc:defs.bzl", "cc_proto_library")
 load("//tools:python_rules.bzl", "py_proto_library")
+load("//tools/install:install.bzl", "install", "install_files")
 
 package(default_visibility = ["//visibility:public"])
+
+install_files(
+    name = "py_pb_task_manager",
+    dest = "task_manager/python/modules/task_manager/proto",
+    files = [
+        ":task_manager_config_py_pb2",
+    ]
+)
 
 cc_proto_library(
     name = "task_manager_config_cc_proto",
@@ -21,32 +30,5 @@ py_proto_library(
     name = "task_manager_config_py_pb2",
     deps = [
         ":task_manager_config_proto",
-    ],
-)
-
-cc_proto_library(
-    name = "task_manager_cc_proto",
-    deps = [
-        ":task_manager_proto",
-    ],
-)
-
-proto_library(
-    name = "task_manager_proto",
-    srcs = ["task_manager.proto"],
-    deps = [
-        "//modules/common/proto:header_proto",
-        "//modules/map/proto:map_parking_space_proto",
-        "//modules/routing/proto:routing_proto",
-    ],
-)
-
-py_proto_library(
-    name = "task_manager_py_pb2",
-    deps = [
-        ":task_manager_proto",
-        "//modules/common/proto:header_py_pb2",
-        "//modules/map/proto:map_parking_space_py_pb2",
-        "//modules/routing/proto:routing_py_pb2",
     ],
 )

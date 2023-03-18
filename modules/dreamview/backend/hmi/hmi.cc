@@ -49,7 +49,7 @@ HMI::HMI(WebSocketHandler* websocket, MapService* map_service)
   }
 }
 
-void HMI::Start() { hmi_worker_->Start(); }
+void HMI::Start(DvCallback callback_api) { hmi_worker_->Start(callback_api); }
 
 void HMI::Stop() { hmi_worker_->Stop(); }
 
@@ -234,5 +234,28 @@ void HMI::SendStatus(WebSocketHandler::Connection* conn) {
   websocket_->SendData(conn, status_json.dump());
 }
 
+bool HMI::UpdateScenarioSetToStatus(const std::string& scenario_set_id,
+                                    const std::string& scenario_set_name) {
+  return hmi_worker_->UpdateScenarioSetToStatus(scenario_set_id,
+                                                scenario_set_name);
+}
+
+bool HMI::UpdateDynamicModelToStatus(const std::string& dynamic_model_name) {
+  return hmi_worker_->UpdateDynamicModelToStatus(dynamic_model_name);
+}
+
+bool HMI::UpdateRecordToStatus() { return hmi_worker_->LoadRecords(); }
+
+bool HMI::UpdateVehicleToStatus() { return hmi_worker_->ReloadVehicles(); }
+
+bool HMI::UpdateCameraChannelToStatus(const std::string& channel_name) {
+  hmi_worker_->UpdateCameraSensorChannelToStatus(channel_name);
+  return true;
+}
+
+bool HMI::UpdatePointChannelToStatus(const std::string& channel_name) {
+  hmi_worker_->UpdatePointCloudChannelToStatus(channel_name);
+  return true;
+}
 }  // namespace dreamview
 }  // namespace apollo

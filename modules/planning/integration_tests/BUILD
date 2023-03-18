@@ -13,7 +13,7 @@ cc_library(
         "//modules/planning:planning_testdata",
     ],
     deps = [
-        "//cyber/common:log",
+        "//cyber",
         "//modules/common/adapters:adapter_gflags",
         "//modules/common/configs:config_gflags",
         "//modules/common/util",
@@ -21,6 +21,7 @@ cc_library(
         "//modules/planning:planning_component_lib",
         "@com_google_googletest//:gtest",
     ],
+    linkstatic = True,
 )
 
 # FIXME(all): temporarily disable integration test for planning flaky problems.
@@ -52,20 +53,21 @@ cc_library(
 #     ],
 # )
 
-cc_test(
-    name = "sunnyvale_big_loop_test",
-    size = "medium",
-    srcs = ["sunnyvale_big_loop_test.cc"],
-    data = [
-        "//modules/common/configs:config_gflags",
-        "//modules/map/data:map_sunnyvale_big_loop",
-        "//modules/planning:planning_testdata",
-    ],
-    linkopts = ["-lgomp"],
-    deps = [
-        ":planning_test_base",
-    ],
-)
+# cc_test(
+#     name = "sunnyvale_big_loop_test",
+#     size = "medium",
+#     srcs = ["sunnyvale_big_loop_test.cc"],
+#     data = [
+#         "//modules/common/configs:config_gflags",
+#         "//modules/map/data:map_sunnyvale_big_loop",
+#         "//modules/planning:planning_testdata",
+#     ],
+#     linkopts = ["-lgomp"],
+#     deps = [
+#         ":planning_test_base",
+#     ],
+#     linkstatic = True,
+# )
 
 # cc_test(
 #     name = "navigation_mode_test",

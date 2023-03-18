@@ -31,10 +31,11 @@ from gflags import FLAGS
 
 from modules.tools.common.logger import Logger
 import modules.tools.common.proto_utils as proto_utils
-from modules.canbus.proto import chassis_pb2
-from modules.common.configs.proto import vehicle_config_pb2
-from modules.localization.proto import localization_pb2
+from modules.common_msgs.chassis_msgs import chassis_pb2
+from modules.common_msgs.config_msgs import vehicle_config_pb2
+from modules.common_msgs.localization_msgs import localization_pb2
 
+APOLLO_ROOT = "/apollo"
 
 class RtkRecord(object):
     """
@@ -192,7 +193,7 @@ def main(argv):
         os.makedirs(log_dir)
 
     Logger.config(
-        log_file=log_dir + "rtk_recorder.log",
+        log_file=os.path.join(APOLLO_ROOT, 'data/log/rtk_recorder.log'),
         use_stdout=True,
         log_level=logging.DEBUG)
     print("runtime log is in %s%s" % (log_dir, "rtk_recorder.log"))

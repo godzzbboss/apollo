@@ -26,8 +26,8 @@
 #include "modules/common/vehicle_state/vehicle_state_provider.h"
 #include "modules/control/common/control_gflags.h"
 #include "modules/control/proto/control_conf.pb.h"
-#include "modules/localization/common/localization_gflags.h"
-#include "modules/planning/proto/planning.pb.h"
+#include "modules/common/configs/config_gflags.h"
+#include "modules/common_msgs/planning_msgs/planning.pb.h"
 
 namespace apollo {
 namespace control {
@@ -39,7 +39,7 @@ using TrajectoryPb = planning::ADCTrajectory;
 using apollo::common::VehicleStateProvider;
 
 const char data_path[] =
-    "/apollo/modules//control/testdata/longitudinal_controller_test/";
+    "/apollo/modules/control/testdata/longitudinal_controller_test/";
 
 class LonControllerTest : public ::testing::Test, LonController {
  public:

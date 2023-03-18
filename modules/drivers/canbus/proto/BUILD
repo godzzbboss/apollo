@@ -6,25 +6,6 @@ load("//tools:python_rules.bzl", "py_proto_library")
 package(default_visibility = ["//visibility:public"])
 
 cc_proto_library(
-    name = "can_card_parameter_cc_proto",
-    deps = [
-        ":can_card_parameter_proto",
-    ],
-)
-
-proto_library(
-    name = "can_card_parameter_proto",
-    srcs = ["can_card_parameter.proto"],
-)
-
-py_proto_library(
-    name = "can_card_parameter_py_pb2",
-    deps = [
-        ":can_card_parameter_proto",
-    ],
-)
-
-cc_proto_library(
     name = "sensor_canbus_conf_cc_proto",
     deps = [
         ":sensor_canbus_conf_proto",
@@ -35,14 +16,14 @@ proto_library(
     name = "sensor_canbus_conf_proto",
     srcs = ["sensor_canbus_conf.proto"],
     deps = [
-        ":can_card_parameter_proto",
+        "//modules/common_msgs/drivers_msgs:can_card_parameter_proto",
     ],
 )
 
 py_proto_library(
     name = "sensor_canbus_conf_py_pb2",
     deps = [
-        ":can_card_parameter_py_pb2",
         ":sensor_canbus_conf_proto",
+        "//modules/common_msgs/drivers_msgs:can_card_parameter_py_pb2",
     ],
 )

@@ -1,13 +1,45 @@
 load("@rules_cc//cc:defs.bzl", "cc_library", "cc_test")
 load("//tools:cpplint.bzl", "cpplint")
+load("//tools/install:install.bzl", "install")
 
 package(default_visibility = ["//visibility:public"])
 PREDICTION_COPTS = ["-DMODULE_NAME=\\\"prediction\\\""]
 
 cc_library(
     name = "prediction_gflags",
-    srcs = ["prediction_gflags.cc"],
+    srcs = ["libprediction_gflags.so"],
     hdrs = ["prediction_gflags.h"],
+    deps = [
+        "@com_github_gflags_gflags//:gflags",
+    ],
+    alwayslink = True,
+)
+
+cc_binary(
+    name = "libprediction_gflags.so",
+    srcs = ["prediction_gflags.cc", "prediction_gflags.h"],
+    linkshared = True,
+    linkstatic = True,
+    deps = [
+        "@com_github_gflags_gflags//:gflags",
+    ],
+)
+
+install(
+    name = "install",
+    library_dest = "prediction/lib",
+    targets = [
+        ":libprediction_gflags.so",
+        ":libprediction_system_gflags.so"
+    ],
+    visibility = ["//visibility:public"],
+)
+
+cc_binary(
+    name = "libprediction_system_gflags.so",
+    srcs = ["prediction_system_gflags.cc", "prediction_system_gflags.h"],
+    linkshared = True,
+    linkstatic = True,
     deps = [
         "@com_github_gflags_gflags//:gflags",
     ],
@@ -15,7 +47,7 @@ cc_library(
 
 cc_library(
     name = "prediction_system_gflags",
-    srcs = ["prediction_system_gflags.cc"],
+    srcs = [":libprediction_system_gflags.so"],
     hdrs = ["prediction_system_gflags.h"],
     deps = [
         "@com_github_gflags_gflags//:gflags",
@@ -79,7 +111,7 @@ cc_library(
         "//modules/prediction/common:prediction_gflags",
         "//modules/prediction/container/obstacles:obstacle",
         "//modules/prediction/proto:offline_features_cc_proto",
-        "//modules/prediction/proto:prediction_obstacle_cc_proto",
+        "//modules/common_msgs/prediction_msgs:prediction_obstacle_cc_proto",
     ],
 )
 
@@ -103,7 +135,7 @@ cc_library(
         "//modules/prediction/common:prediction_constants",
         "//modules/prediction/common:prediction_gflags",
         "//modules/prediction/common:prediction_system_gflags",
-        "//modules/prediction/proto:lane_graph_cc_proto",
+        "//modules/common_msgs/prediction_msgs:lane_graph_cc_proto",
     ],
 )
 
@@ -134,7 +166,7 @@ cc_library(
     deps = [
         "//modules/common/math",
         "//modules/prediction/common:prediction_gflags",
-        "//modules/prediction/proto:lane_graph_cc_proto",
+        "//modules/common_msgs/prediction_msgs:lane_graph_cc_proto",
     ],
 )
 
@@ -158,7 +190,7 @@ cc_library(
     hdrs = ["environment_features.h"],
     deps = [
         "//cyber",
-        "//modules/common/proto:geometry_cc_proto",
+        "//modules/common_msgs/basic_msgs:geometry_cc_proto",
     ],
 )
 
@@ -170,6 +202,7 @@ cc_test(
         ":environment_features",
         "@com_google_googletest//:gtest_main",
     ],
+    linkstatic = True,
 )
 
 cc_library(
@@ -179,7 +212,7 @@ cc_library(
     copts = PREDICTION_COPTS,
     deps = [
         ":prediction_map",
-        "//modules/prediction/proto:feature_cc_proto",
+        "//modules/common_msgs/prediction_msgs:feature_cc_proto",
     ],
 )
 
@@ -205,14 +238,13 @@ cc_library(
     copts = PREDICTION_COPTS,
     deps = [
         ":semantic_map",
-        "//cyber/common:file",
-        "//cyber/proto:record_cc_proto",
+        "//cyber",
         "//modules/common/adapters:adapter_gflags",
         "//modules/prediction/evaluator:evaluator_manager",
         "//modules/prediction/predictor:predictor_manager",
         "//modules/prediction/proto:offline_features_cc_proto",
         "//modules/prediction/scenario:scenario_manager",
-        "//modules/prediction/util:data_extraction",
+        "//modules/common/util:util_tool",
     ],
 )
 
@@ -222,8 +254,7 @@ cc_library(
     hdrs = ["prediction_thread_pool.h"],
     copts = PREDICTION_COPTS,
     deps = [
-        "//cyber/base",
-        "//cyber/common",
+        "//cyber",
     ],
 )
 
@@ -244,12 +275,12 @@ cc_library(
     copts = PREDICTION_COPTS,
     deps = [
         ":prediction_gflags",
-        "//cyber/common",
+        "//cyber",
         "//modules/common/configs:config_gflags",
         "//modules/common/util",
         "//modules/prediction/container:container_manager",
         "//modules/prediction/container/pose:pose_container",
-        "//modules/prediction/proto:feature_cc_proto",
+        "//modules/common_msgs/prediction_msgs:feature_cc_proto",
         "@opencv//:highgui",
         "@opencv//:imgcodecs",
     ],

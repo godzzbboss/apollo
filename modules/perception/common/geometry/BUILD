@@ -16,7 +16,7 @@ cc_library(
     name = "common",
     hdrs = ["common.h"],
     deps = [
-        "//modules/common/util:eigen_defs",
+        "//modules/common/util:util_tool",
         "//modules/perception/base:box",
         "//modules/perception/base:point_cloud",
     ],
@@ -93,6 +93,7 @@ cc_test(
         "//modules/perception/base:point_cloud",
         "@com_google_googletest//:gtest_main",
     ],
+    linkstatic = True,
 )
 
 cpplint()

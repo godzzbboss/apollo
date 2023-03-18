@@ -162,10 +162,10 @@ void Target::Update3D(CameraFrame *frame) {
   auto object = latest_object->object;
   if (!isLost()) {
     Eigen::Vector2d z;
-    z << std::sin(object->theta * 2), std::cos(object->theta * 2);
+    z << std::sin(object->theta), std::cos(object->theta);
     direction.AddMeasure(z);
     z = direction.get_state();
-    float theta = static_cast<float>(std::atan2(z[0], z[1]) / 2.0);
+    float theta = static_cast<float>(std::atan2(z[0], z[1]));
     AINFO << "dir " << id << " " << object->theta << " " << theta;
     object->theta = theta;
     object->direction[0] = static_cast<float>(cos(object->theta));
@@ -303,6 +303,30 @@ void Target::Update3D(CameraFrame *frame) {
 
   // debug velocity
   ADEBUG << "obj_speed--id: " << id << " " << object->velocity.head(2).norm();
+}
+
+void Target::Update(CameraFrame *frame) {
+  auto object = latest_object->object;
+  if (!isLost()) {
+    // todo(zero): need to fix alpha
+    float alpha = 0.01f;
+
+    Eigen::Vector4d size_measurement;
+    size_measurement << alpha, object->size(0), object->size(1),
+        object->size(2);
+    world_lwh.AddMeasure(size_measurement);
+    world_lwh_for_unmovable.AddMeasure(size_measurement);
+    // update 3d object size
+    if (object->type == base::ObjectType::UNKNOWN_UNMOVABLE) {
+      object->size =
+          world_lwh_for_unmovable.get_state().block<3, 1>(1, 0).cast<float>();
+    } else {
+      object->size = world_lwh.get_state().block<3, 1>(1, 0).cast<float>();
+    }
+    ADEBUG << " size is " << world_lwh.get_state().transpose();
+  }
+
+  Update3D(frame);
 }
 
 void Target::UpdateType(CameraFrame *frame) {

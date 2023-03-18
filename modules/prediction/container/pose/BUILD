@@ -11,9 +11,9 @@ cc_library(
         "-DMODULE_NAME=\\\"prediction\\\"",
     ],
     deps = [
-        "//modules/common/math:quaternion",
-        "//modules/localization/proto:localization_cc_proto",
-        "//modules/perception/proto:perception_obstacle_cc_proto",
+        "//modules/common/math",
+        "//modules/common_msgs/localization_msgs:localization_cc_proto",
+        "//modules/common_msgs/perception_msgs:perception_obstacle_cc_proto",
         "//modules/prediction/common:prediction_gflags",
         "//modules/prediction/container",
     ],
@@ -27,6 +27,7 @@ cc_test(
         "//modules/prediction/container/pose:pose_container",
         "@com_google_googletest//:gtest_main",
     ],
+    linkstatic = True,
 )
 
 cpplint()

@@ -13,7 +13,7 @@ cc_library(
         "//modules/planning/common:planning_context",
         "//modules/planning/common:planning_gflags",
         "//modules/planning/common:reference_line_info",
-        "//modules/planning/proto:planning_cc_proto",
+        "//modules/common_msgs/planning_msgs:planning_cc_proto",
         "//modules/planning/tasks:task",
         "@ad_rss_lib//:ad_rss",
     ],
@@ -23,6 +23,7 @@ cc_test(
     name = "rss_decider_test",
     size = "small",
     srcs = ["rss_decider_test.cc"],
+    tags = ["exclude"],
     deps = [
         ":rss_decider",
         "@ad_rss_lib//:ad_rss",

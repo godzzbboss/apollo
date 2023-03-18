@@ -21,18 +21,20 @@
 #include <utility>
 #include <vector>
 
+#include "modules/perception/camera/lib/obstacle/detector/smoke/proto/smoke.pb.h"
+
 #include "cyber/common/file.h"
 #include "modules/perception/base/box.h"
 #include "modules/perception/base/object_types.h"
 #include "modules/perception/camera/common/util.h"
 #include "modules/perception/camera/lib/interface/base_feature_extractor.h"
 #include "modules/perception/camera/lib/interface/base_obstacle_detector.h"
-#include "modules/perception/camera/lib/obstacle/detector/smoke/proto/smoke.pb.h"
 #include "modules/perception/camera/lib/obstacle/detector/smoke/region_output.h"
 #include "modules/perception/camera/lib/obstacle/detector/yolo/region_output.h"
 #include "modules/perception/inference/inference.h"
 #include "modules/perception/inference/utils/resize.h"
 #include "modules/perception/inference/utils/util.h"
+#include "modules/perception/pipeline/stage.h"
 
 namespace apollo {
 namespace perception {
@@ -50,11 +52,28 @@ class SmokeObstacleDetector : public BaseObstacleDetector {
   bool Init(const ObstacleDetectorInitOptions &options =
                 ObstacleDetectorInitOptions()) override;
 
+  bool Init(const StageConfig& stage_config) override;
+
   bool Detect(const ObstacleDetectorOptions &options,
               CameraFrame *frame) override;
-  std::string Name() const override { return "SmokeObstacleDetector"; }
+
+  bool Detect(const std::vector<float> &k_inv,
+              const std::vector<float> &image_data_array,
+              const float *detect_result);
+
+  bool Process(DataFrame *data_frame) override;
+
+  bool Process(const std::vector<float> &k_inv,
+               const std::vector<float> &image_data_array,
+               const float *detect_result);
+
+  bool IsEnabled() const override { return enable_; }
+
+  std::string Name() const override { return name_; }
 
  protected:
+  bool Preprocessor(const base::Image8U* image,
+                    std::shared_ptr<base::Blob<float>> input_blob);
   void LoadInputShape(const smoke::ModelParam &model_param);
   void LoadParam(const smoke::SmokeParam &smoke_param);
   bool InitNet(const smoke::SmokeParam &smoke_param,
@@ -70,6 +89,7 @@ class SmokeObstacleDetector : public BaseObstacleDetector {
   std::vector<base::ObjectSubType> types_;
   std::vector<float> expands_;
   std::vector<float> anchors_;
+  std::vector<std::string> camera_names_;
 
   SmokeNMSParam nms_;
   cudaStream_t stream_ = nullptr;
@@ -97,6 +117,8 @@ class SmokeObstacleDetector : public BaseObstacleDetector {
   bool with_ratios_ = false;
   bool with_area_id_ = false;
   float border_ratio_ = 0.f;
+
+  SmokeObstacleDetectionConfig smoke_obstacle_detection_config_;
 };
 
 }  // namespace camera

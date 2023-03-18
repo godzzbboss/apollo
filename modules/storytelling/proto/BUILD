@@ -2,8 +2,17 @@
 load("@rules_proto//proto:defs.bzl", "proto_library")
 load("@rules_cc//cc:defs.bzl", "cc_proto_library")
 load("//tools:python_rules.bzl", "py_proto_library")
+load("//tools/install:install.bzl", "install", "install_files")
 
 package(default_visibility = ["//visibility:public"])
+
+install_files(
+    name = "py_pb_storytelling",
+    dest = "storytelling/python/modules/storytelling/proto",
+    files = [
+        ":storytelling_config_py_pb2",
+    ]
+)
 
 cc_proto_library(
     name = "storytelling_config_cc_proto",
@@ -21,28 +30,5 @@ py_proto_library(
     name = "storytelling_config_py_pb2",
     deps = [
         ":storytelling_config_proto",
-    ],
-)
-
-cc_proto_library(
-    name = "story_cc_proto",
-    deps = [
-        ":story_proto",
-    ],
-)
-
-proto_library(
-    name = "story_proto",
-    srcs = ["story.proto"],
-    deps = [
-        "//modules/common/proto:header_proto",
-    ],
-)
-
-py_proto_library(
-    name = "story_py_pb2",
-    deps = [
-        ":story_proto",
-        "//modules/common/proto:header_py_pb2",
     ],
 )

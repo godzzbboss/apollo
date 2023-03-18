@@ -23,14 +23,16 @@
 #include <algorithm>
 
 #include "absl/strings/str_cat.h"
+
+#include "modules/common_msgs/planning_msgs/sl_boundary.pb.h"
+#include "modules/planning/proto/planning_status.pb.h"
+
 #include "cyber/task/task.h"
 #include "modules/common/configs/vehicle_config_helper.h"
 #include "modules/common/util/point_factory.h"
 #include "modules/common/util/util.h"
 #include "modules/map/hdmap/hdmap_common.h"
 #include "modules/map/hdmap/hdmap_util.h"
-#include "modules/planning/proto/planning_status.pb.h"
-#include "modules/planning/proto/sl_boundary.pb.h"
 
 namespace apollo {
 namespace planning {
@@ -890,7 +892,7 @@ void ReferenceLineInfo::ExportEngageAdvice(
   } else if (!is_on_reference_line_) {
     const auto& scenario_type =
         planning_context->planning_status().scenario().scenario_type();
-    if (scenario_type == ScenarioConfig::PARK_AND_GO || IsChangeLanePath()) {
+    if (scenario_type == ScenarioType::PARK_AND_GO || IsChangeLanePath()) {
       // note: when is_on_reference_line_ is FALSE
       //   (1) always engage while in PARK_AND_GO scenario
       //   (2) engage when "ChangeLanePath" is picked as Drivable ref line
@@ -992,6 +994,22 @@ int ReferenceLineInfo::GetPnCJunction(
   for (const auto& overlap : pnc_junction_overlaps) {
     if (s >= overlap.start_s - kError && s <= overlap.end_s + kError) {
       *pnc_junction_overlap = overlap;
+      return 1;
+    }
+  }
+  return 0;
+}
+
+int ReferenceLineInfo::GetJunction(const double s,
+                                   hdmap::PathOverlap* junction_overlap) const {
+  CHECK_NOTNULL(junction_overlap);
+  const std::vector<hdmap::PathOverlap>& junction_overlaps =
+      reference_line_.map_path().junction_overlaps();
+
+  static constexpr double kError = 1.0;  // meter
+  for (const auto& overlap : junction_overlaps) {
+    if (s >= overlap.start_s - kError && s <= overlap.end_s + kError) {
+      *junction_overlap = overlap;
       return 1;
     }
   }

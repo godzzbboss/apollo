@@ -46,6 +46,8 @@ class MapService {
   inline double GetXOffset() const { return x_offset_; }
   inline double GetYOffset() const { return y_offset_; }
 
+  bool PointIsValid(const double x, const double y) const;
+
   void CollectMapElementIds(const apollo::common::PointENU &point,
                             double raidus, MapElementIds *ids) const;
 
@@ -84,8 +86,8 @@ class MapService {
 
   bool CheckRoutingPoint(const double x, const double y) const;
 
-  bool CheckRoutingPointLaneId(const double x, const double y,
-                               const std::vector<std::string> idsArr) const;
+  bool CheckRoutingPointWithHeading(
+    const double x, const double y, const double heading) const;
 
   bool CheckRoutingPointLaneType(apollo::hdmap::LaneInfoConstPtr lane) const;
 
@@ -93,6 +95,8 @@ class MapService {
   bool ReloadMap(bool force_reload);
 
   size_t CalculateMapHash(const MapElementIds &ids) const;
+
+  double GetLaneHeading(const std::string& id_str, double s);
 
  private:
   void UpdateOffsets();

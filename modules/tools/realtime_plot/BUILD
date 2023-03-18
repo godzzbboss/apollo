@@ -1,4 +1,5 @@
 load("@rules_python//python:defs.bzl", "py_binary", "py_library")
+load("//tools/install:install.bzl", "install")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -15,9 +16,9 @@ py_binary(
         ":stitem",
         ":xyitem",
         "//cyber/python/cyber_py3:cyber",
-        "//modules/canbus/proto:chassis_py_pb2",
-        "//modules/localization/proto:localization_py_pb2",
-        "//modules/planning/proto:planning_py_pb2",
+        "//modules/common_msgs/chassis_msgs:chassis_py_pb2",
+        "//modules/common_msgs/localization_msgs:localization_py_pb2",
+        "//modules/common_msgs/planning_msgs:planning_py_pb2",
         "//modules/tools/common:proto_utils",
     ],
 )
@@ -30,4 +31,12 @@ py_library(
 py_library(
     name = "xyitem",
     srcs = ["xyitem.py"],
+)
+
+install(
+    name = "install",
+    py_dest = "tools/realtime_plot",
+    targets = [
+        ":realtime_plot",
+    ]
 )

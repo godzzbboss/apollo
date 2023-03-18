@@ -38,7 +38,6 @@ DECLARE_string(scenario_traffic_light_protected_config_file);
 DECLARE_string(scenario_traffic_light_unprotected_left_turn_config_file);
 DECLARE_string(scenario_traffic_light_unprotected_right_turn_config_file);
 DECLARE_string(scenario_valet_parking_config_file);
-DECLARE_string(scenario_deadend_turnaround_config_file);
 DECLARE_string(scenario_yield_sign_config_file);
 
 DECLARE_bool(enable_scenario_bare_intersection);
@@ -70,10 +69,6 @@ DECLARE_double(change_lane_min_length);
 
 DECLARE_bool(publish_estop);
 DECLARE_bool(enable_trajectory_stitcher);
-
-// parameters for trajectory stitching and reinit planning starting point.
-DECLARE_double(replan_lateral_distance_threshold);
-DECLARE_double(replan_longitudinal_distance_threshold);
 
 // parameter for reference line
 DECLARE_bool(enable_reference_line_provider_thread);

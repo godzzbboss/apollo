@@ -25,7 +25,7 @@ RUNTIME_STANDALONE="false"
 
 TARGET_ARCH="$(uname -m)"
 
-VERSION_X86_64="runtime-x86_64-18.04-20210914_1336"
+VERSION_X86_64="runtime-x86_64-18.04-20220803_1505"
 USER_VERSION_OPT=
 
 FAST_MODE="no"
@@ -172,6 +172,10 @@ function setup_devices_and_mount_local_volumes() {
     else
         volumes="-v ${APOLLO_ROOT_DIR}:/apollo"
     fi
+
+    [ -d "${APOLLO_CONFIG_HOME}" ] || mkdir -p "${APOLLO_CONFIG_HOME}"
+    volumes="-v ${APOLLO_CONFIG_HOME}:${APOLLO_CONFIG_HOME} ${volumes}"
+
 
     local os_release="$(lsb_release -rs)"
     case "${os_release}" in

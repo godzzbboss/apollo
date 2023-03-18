@@ -38,6 +38,17 @@ bool ObstacleMultiSensorFusion::Init(
   return true;
 }
 
+bool ObstacleMultiSensorFusion::Init(const PipelineConfig& pipeline_config) {
+  return Initialize(pipeline_config);
+}
+
+bool ObstacleMultiSensorFusion::Process(DataFrame* data_frame) {
+  if (data_frame == nullptr)
+    return false;
+
+  return InnerProcess(data_frame);
+}
+
 bool ObstacleMultiSensorFusion::Process(const base::FrameConstPtr& frame,
                                         std::vector<base::ObjectPtr>* objects) {
   FusionOptions options;

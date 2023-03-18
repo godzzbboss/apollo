@@ -2,6 +2,7 @@
 load("@rules_proto//proto:defs.bzl", "proto_library")
 load("@rules_cc//cc:defs.bzl", "cc_proto_library")
 load("//tools:python_rules.bzl", "py_proto_library")
+load("//tools/install:install.bzl", "install", "install_files")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -24,27 +25,10 @@ py_proto_library(
     ],
 )
 
-cc_proto_library(
-    name = "guardian_cc_proto",
-    deps = [
-        ":guardian_proto",
-    ],
-)
-
-proto_library(
-    name = "guardian_proto",
-    srcs = ["guardian.proto"],
-    deps = [
-        "//modules/common/proto:header_proto",
-        "//modules/control/proto:control_cmd_proto",
-    ],
-)
-
-py_proto_library(
-    name = "guardian_py_pb2",
-    deps = [
-        ":guardian_proto",
-        "//modules/common/proto:header_py_pb2",
-        "//modules/control/proto:control_cmd_py_pb2",
-    ],
+install_files(
+    name = "py_pb_guardian",
+    dest = "guardian/python/modules/guardian/proto",
+    files = [
+        ":guardian_conf_py_pb2",
+    ]
 )

@@ -6,6 +6,8 @@ package(default_visibility = ["//visibility:public"])
 
 install(
     name = "install",
+    data_dest = "drivers/addition_data/conti_radar",
+    library_dest = "drivers/lib/conti_radar",
     data = [
         ":runtime_data",
     ],
@@ -29,7 +31,7 @@ cc_library(
     srcs = ["conti_radar_message_manager.cc"],
     hdrs = ["conti_radar_message_manager.h"],
     deps = [
-        "//modules/common/util:message_util",
+        "//modules/common/util:util_tool",
         "//modules/drivers/canbus/can_client:can_client_factory",
         "//modules/drivers/canbus/can_comm:can_sender",
         "//modules/drivers/canbus/can_comm:message_manager_base",
@@ -42,6 +44,7 @@ cc_library(
     srcs = ["conti_radar_canbus_component.cc"],
     hdrs = ["conti_radar_canbus_component.h"],
     copts = ['-DMODULE_NAME=\\"conti_radar\\"'],
+    alwayslink = True,
     deps = [
         ":conti_radar_message_manager",
         "//cyber",
@@ -52,8 +55,8 @@ cc_library(
         "//modules/drivers/canbus/can_comm:message_manager_base",
         "//modules/drivers/canbus/proto:sensor_canbus_conf_cc_proto",
         "//modules/drivers/radar/conti_radar/protocol:drivers_conti_radar_protocol",
-        "//modules/localization/proto:localization_cc_proto",
-        "//modules/localization/proto:pose_cc_proto",
+        "//modules/common_msgs/localization_msgs:localization_cc_proto",
+        "//modules/common_msgs/localization_msgs:pose_cc_proto",
         "@eigen",
     ],
 )
@@ -61,7 +64,7 @@ cc_library(
 cc_binary(
     name = "libconti_radar.so",
     linkshared = True,
-    linkstatic = False,
+    linkstatic = True,
     deps = [":conti_radar_canbus_lib"],
 )
 

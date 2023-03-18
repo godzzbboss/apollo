@@ -18,8 +18,8 @@ cc_library(
     ],
     copts = ["-DMODULE_NAME=\\\"planning\\\""],
     deps = [
-        "//cyber/common:log",
-        "//modules/planning/proto:planning_cc_proto",
+        "//cyber",
+        "//modules/common_msgs/planning_msgs:planning_cc_proto",
         "//modules/planning/scenarios:scenario",
     ],
 )
@@ -36,6 +36,7 @@ cc_test(
         ":valet_parking",
         "@com_google_googletest//:gtest_main",
     ] + if_gpu(["@local_config_cuda//cuda:cudart"]),
+    linkstatic = True,
 )
 
 cc_test(
@@ -50,6 +51,7 @@ cc_test(
         ":valet_parking",
         "@com_google_googletest//:gtest_main",
     ] + if_gpu(["@local_config_cuda//cuda:cudart"]),
+    linkstatic = True,
 )
 
 cc_test(
@@ -64,6 +66,7 @@ cc_test(
         ":valet_parking",
         "@com_google_googletest//:gtest_main",
     ] + if_gpu(["@local_config_cuda//cuda:cudart"]),
+    linkstatic = True,
 )
 
 cpplint()

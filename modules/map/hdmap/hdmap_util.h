@@ -19,10 +19,10 @@ limitations under the License.
 #include <string>
 
 #include "absl/strings/str_cat.h"
+#include "modules/common_msgs/map_msgs/map_id.pb.h"
+#include "modules/common_msgs/planning_msgs/navigation.pb.h"
 #include "modules/common/configs/config_gflags.h"
 #include "modules/map/hdmap/hdmap.h"
-#include "modules/map/proto/map_id.pb.h"
-#include "modules/map/relative_map/proto/navigation.pb.h"
 
 /**
  * @namespace apollo::hdmap
@@ -67,6 +67,14 @@ inline std::string EndWayPointFile() {
  */
 inline std::string DefaultRoutingFile() {
     return absl::StrCat(FLAGS_map_dir, "_", FLAGS_default_routing_filename);
+}
+
+/**
+ * @brief get park and go routings file path from flags.
+ * @return park and routng routings file path
+ */
+inline std::string ParkGoRoutingFile() {
+    return absl::StrCat(FLAGS_map_dir, "_", FLAGS_park_go_routing_filename);
 }
 
 /**

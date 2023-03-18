@@ -6,6 +6,7 @@ package(default_visibility = ["//visibility:public"])
 cc_binary(
     name = "smart_recorder",
     srcs = ["smart_recorder.cc"],
+    linkstatic = True,
     deps = [
         ":post_record_processor",
         ":realtime_record_processor",
@@ -20,8 +21,7 @@ cc_library(
     deps = [
         ":channel_pool",
         ":record_processor",
-        "//cyber/record:record_reader",
-        "//cyber/record:record_viewer",
+        "//cyber",
     ],
 )
 
@@ -33,11 +33,8 @@ cc_library(
         ":channel_pool",
         ":record_processor",
         "//cyber",
-        "//cyber/record:record_file_reader",
-        "//cyber/record:record_reader",
-        "//cyber/record:record_viewer",
         "//cyber/tools/cyber_recorder:recorder",
-        "//modules/data/tools/smart_recorder/proto:smart_recorder_status_cc_proto",
+        "//modules/common_msgs/monitor_msgs:smart_recorder_status_cc_proto",
         "//modules/monitor/common:monitor_manager",
     ],
 )
@@ -47,6 +44,7 @@ cc_library(
     srcs = ["record_processor.cc"],
     hdrs = ["record_processor.h"],
     deps = [
+        ":bumper_crash_trigger",
         ":drive_event_trigger",
         ":emergency_mode_trigger",
         ":hard_brake_trigger",
@@ -54,8 +52,7 @@ cc_library(
         ":regular_interval_trigger",
         ":small_topics_trigger",
         ":swerve_trigger",
-        "//cyber/common:file",
-        "//cyber/record:record_writer",
+        "//cyber",
         "//modules/common/util",
     ],
 )
@@ -76,7 +73,7 @@ cc_library(
     deps = [
         ":trigger_base",
         "//modules/common/adapters:adapter_gflags",
-        "//modules/common/proto:drive_event_cc_proto",
+        "//modules/common_msgs/basic_msgs:drive_event_cc_proto",
     ],
 )
 
@@ -86,9 +83,20 @@ cc_library(
     hdrs = ["emergency_mode_trigger.h"],
     deps = [
         ":trigger_base",
-        "//modules/canbus/proto:chassis_cc_proto",
+        "//modules/common_msgs/chassis_msgs:chassis_cc_proto",
         "//modules/common/adapters:adapter_gflags",
-        "//modules/control/proto:control_cmd_cc_proto",
+        "//modules/common_msgs/control_msgs:control_cmd_cc_proto",
+    ],
+)
+
+cc_library(
+    name = "bumper_crash_trigger",
+    srcs = ["bumper_crash_trigger.cc"],
+    hdrs = ["bumper_crash_trigger.h"],
+    deps = [
+        ":trigger_base",
+        "//modules/common_msgs/chassis_msgs:chassis_cc_proto",
+        "//modules/common/adapters:adapter_gflags",
     ],
 )
 
@@ -98,9 +106,9 @@ cc_library(
     hdrs = ["hard_brake_trigger.h"],
     deps = [
         ":trigger_base",
-        "//modules/canbus/proto:chassis_cc_proto",
+        "//modules/common_msgs/chassis_msgs:chassis_cc_proto",
         "//modules/common/adapters:adapter_gflags",
-        "//modules/control/proto:control_cmd_cc_proto",
+        "//modules/common_msgs/control_msgs:control_cmd_cc_proto",
     ],
 )
 
@@ -120,9 +128,9 @@ cc_library(
     hdrs = ["swerve_trigger.h"],
     deps = [
         ":trigger_base",
-        "//modules/canbus/proto:chassis_cc_proto",
+        "//modules/common_msgs/chassis_msgs:chassis_cc_proto",
         "//modules/common/adapters:adapter_gflags",
-        "//modules/control/proto:control_cmd_cc_proto",
+        "//modules/common_msgs/control_msgs:control_cmd_cc_proto",
     ],
 )
 
@@ -141,7 +149,7 @@ cc_library(
     hdrs = ["trigger_base.h"],
     deps = [
         ":interval_pool",
-        "//cyber/record:record_message",
+        "//cyber",
         "//modules/data/tools/smart_recorder/proto:smart_recorder_triggers_cc_proto",
     ],
 )
@@ -151,9 +159,8 @@ cc_library(
     srcs = ["interval_pool.cc"],
     hdrs = ["interval_pool.h"],
     deps = [
-        "//cyber/common:log",
-        "//cyber/common:macros",
-        "@com_google_absl//absl/strings",
+        "//cyber",
+        "@com_google_absl//:absl",
     ],
 )
 
@@ -162,7 +169,7 @@ cc_library(
     srcs = ["channel_pool.cc"],
     hdrs = ["channel_pool.h"],
     deps = [
-        "//cyber/common:macros",
+        "//cyber",
         "//modules/common/adapters:adapter_gflags",
     ],
 )

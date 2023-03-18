@@ -18,10 +18,10 @@ cc_library(
     ],
     copts = ["-DMODULE_NAME=\\\"planning\\\""],
     deps = [
-        "//cyber/common:log",
+        "//cyber",
         "//modules/common/util",
-        "//modules/common/util:factory",
-        "//modules/planning/proto:planning_cc_proto",
+        "//modules/common/util:util_tool",
+        "//modules/common_msgs/planning_msgs:planning_cc_proto",
         "//modules/planning/scenarios:scenario",
         "//modules/planning/scenarios/common:stage_intersection_cruise_impl",
         "//modules/planning/scenarios/util:scenario_util_lib",
@@ -40,6 +40,7 @@ cc_test(
         ":traffic_light_protected_scenario",
         "@com_google_googletest//:gtest_main",
     ],
+    linkstatic = True,
 )
 
 cc_test(
@@ -54,6 +55,7 @@ cc_test(
         ":traffic_light_protected_scenario",
         "@com_google_googletest//:gtest_main",
     ],
+    linkstatic = True,
 )
 
 cpplint()

@@ -13,6 +13,7 @@ filegroup(
 
 install(
     name = "install",
+    data_dest = "perception/addition_data/production",
     data = [
         ":runtime_data",
     ],

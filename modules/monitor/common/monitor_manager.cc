@@ -18,7 +18,7 @@
 
 #include "gflags/gflags.h"
 
-#include "modules/canbus/proto/chassis.pb.h"
+#include "modules/common_msgs/chassis_msgs/chassis.pb.h"
 
 #include "cyber/common/file.h"
 #include "modules/common/adapters/adapter_gflags.h"
@@ -98,6 +98,11 @@ bool MonitorManager::CheckAutonomousDriving(const double current_time) {
   chassis_reader->Observe();
   const auto chassis = chassis_reader->GetLatestObserved();
   if (chassis == nullptr) {
+    return false;
+  }
+
+  // If SimControl is used, return false to ignore safety check.
+  if (chassis->header().module_name() == "SimControl") {
     return false;
   }
 

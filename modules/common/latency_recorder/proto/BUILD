@@ -2,6 +2,7 @@
 load("@rules_proto//proto:defs.bzl", "proto_library")
 load("@rules_cc//cc:defs.bzl", "cc_proto_library")
 load("//tools:python_rules.bzl", "py_proto_library")
+load("//tools/install:install.bzl", "install", "install_files")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -16,7 +17,7 @@ proto_library(
     name = "latency_record_proto",
     srcs = ["latency_record.proto"],
     deps = [
-        "//modules/common/proto:header_proto",
+        "//modules/common_msgs/basic_msgs:header_proto",
     ],
 )
 
@@ -24,6 +25,14 @@ py_proto_library(
     name = "latency_record_py_pb2",
     deps = [
         ":latency_record_proto",
-        "//modules/common/proto:header_py_pb2",
+        "//modules/common_msgs/basic_msgs:header_py_pb2",
     ],
+)
+
+install_files(
+    name = "py_pb_common_latency_record",
+    dest = "common/python/modules/common/latency_recorder/proto",
+    files = [
+        "latency_record_py_pb2",
+    ]
 )

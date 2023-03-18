@@ -4,6 +4,8 @@ package(default_visibility = ["//visibility:public"])
 
 install(
     name = "install",
+    data_dest = "drivers/addition_data/lidar/velodyne",
+    library_dest = "drivers/lib/lidar/velodyne",
     data = [
         ":runtime_data",
     ],

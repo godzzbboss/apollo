@@ -4,6 +4,7 @@ package(default_visibility = ["//visibility:public"])
 
 install(
     name = "install",
+    data_dest = "localization/addition_data/msf/params",
     data = [
         ":runtime_data",
     ],

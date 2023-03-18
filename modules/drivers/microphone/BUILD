@@ -9,7 +9,7 @@ MICROPHONE_COPTS = ['-DMODULE_NAME=\\"microphone\\"']
 cc_binary(
     name = "libmicrophone_component.so",
     linkshared = True,
-    linkstatic = False,
+    linkstatic = True,
     deps = [
         ":microphone_component_lib",
     ],
@@ -17,14 +17,22 @@ cc_binary(
 
 install(
     name = "install",
+    data_dest = "drivers/addition_data/microphone",
+    library_dest = "drivers/lib/microphone",
     data = [
         ":runtime_data",
     ],
     targets = [
         ":libmicrophone_component.so",
     ],
-    deps = [
-        "//cyber:install",
+    deps = [":install_lib_top_level"]
+)
+
+install(
+    name = "install_lib_top_level",
+    library_dest = "drivers/lib",
+    targets = [
+        ":libmicrophone_component.so",
     ],
 )
 
@@ -42,9 +50,10 @@ cc_library(
     srcs = ["microphone_component.cc"],
     hdrs = ["microphone_component.h"],
     copts = MICROPHONE_COPTS,
+    alwayslink = True,
     deps = [
         "//cyber",
-        "//modules/common/util:message_util",
+        "//modules/common/util:util_tool",
         "//modules/drivers/microphone:respeaker",
         "//modules/drivers/microphone/proto:audio_cc_proto",
         "//modules/drivers/microphone/proto:microphone_config_cc_proto",

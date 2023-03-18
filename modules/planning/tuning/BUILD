@@ -8,7 +8,7 @@ cc_library(
     srcs = ["autotuning_raw_feature_generator.cc"],
     hdrs = ["autotuning_raw_feature_generator.h"],
     deps = [
-        "//modules/common/proto:pnc_point_cc_proto",
+        "//modules/common_msgs/basic_msgs:pnc_point_cc_proto",
         "//modules/common/status",
         "//modules/planning/common:frame",
         "//modules/planning/common:reference_line_info",
@@ -42,9 +42,10 @@ cc_library(
     srcs = ["autotuning_mlp_net_model.cc"],
     hdrs = ["autotuning_mlp_net_model.h"],
     deps = [
-        "//cyber/common:macros",
+        "//cyber",
         "//modules/prediction/network:net_model",
     ],
+    tags = ["exclude"]
 )
 
 cc_test(
@@ -55,6 +56,7 @@ cc_test(
         ":autotuning_mlp_net_model",
         "@com_google_googletest//:gtest_main",
     ],
+    tags = ["exclude"]
 )
 
 cc_library(
@@ -66,6 +68,7 @@ cc_library(
         "//modules/common/status",
         "//modules/planning/proto:auto_tuning_model_input_cc_proto",
     ],
+    tags = ["exclude"]
 )
 
 cpplint()

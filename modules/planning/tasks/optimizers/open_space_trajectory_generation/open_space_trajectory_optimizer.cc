@@ -33,8 +33,7 @@ OpenSpaceTrajectoryOptimizer::OpenSpaceTrajectoryOptimizer(
     const OpenSpaceTrajectoryOptimizerConfig& config)
     : config_(config) {
   // Load config
-  config_ = config;
-
+  AINFO << config_.DebugString();
   // Initialize hybrid astar class pointer
   warm_start_.reset(new HybridAStar(config.planner_open_space_config()));
 
@@ -107,7 +106,7 @@ Status OpenSpaceTrajectoryOptimizer::Plan(
                         &result)) {
     ADEBUG << "State warm start problem solved successfully!";
   } else {
-    ADEBUG << "State warm start problem failed to solve";
+    AERROR << "State warm start problem failed to solve";
     return Status(ErrorCode::PLANNING_ERROR,
                   "State warm start problem failed to solve");
   }
@@ -179,51 +178,65 @@ Status OpenSpaceTrajectoryOptimizer::Plan(
       }
       // TODO(Jinyun): Further testing
       const auto smoother_start_timestamp = std::chrono::system_clock::now();
-      if (FLAGS_use_iterative_anchoring_smoother) {
-        if (!GenerateDecoupledTraj(
-                xWS_vec[i], last_time_u(1, 0), init_v, obstacles_vertices_vec,
-                &state_result_ds_vec[i], &control_result_ds_vec[i],
-                &time_result_ds_vec[i])) {
-          ADEBUG << "Smoother fail at " << i << "th trajectory";
-          ADEBUG << i << "th trajectory size is " << xWS_vec[i].cols();
-          return Status(
-              ErrorCode::PLANNING_ERROR,
-              "iterative anchoring smoothing problem failed to solve");
+      switch (config_.trajectory_smoother()) {
+        case OpenSpaceTrajectoryOptimizerConfig::ITERATIVE_ANCHORING_SMOOTHER: {
+          if (!GenerateDecoupledTraj(
+                  xWS_vec[i], last_time_u(1, 0), init_v, obstacles_vertices_vec,
+                  &state_result_ds_vec[i], &control_result_ds_vec[i],
+                  &time_result_ds_vec[i])) {
+            AERROR << "Smoother fail at " << i << "th trajectory";
+            AERROR << i << "th trajectory size is " << xWS_vec[i].cols();
+            return Status(
+                ErrorCode::PLANNING_ERROR,
+                "iterative anchoring smoothing problem failed to solve");
+          }
+          break;
         }
-      } else {
-        const double start_system_timestamp =
-            std::chrono::duration<double>(
-                std::chrono::system_clock::now().time_since_epoch())
-                .count();
-        if (!GenerateDistanceApproachTraj(
-                xWS_vec[i], uWS_vec[i], XYbounds, obstacles_edges_num,
-                obstacles_A, obstacles_b, obstacles_vertices_vec, last_time_u,
-                init_v, &state_result_ds_vec[i], &control_result_ds_vec[i],
-                &time_result_ds_vec[i], &l_warm_up_vec[i], &n_warm_up_vec[i],
-                &dual_l_result_ds_vec[i], &dual_n_result_ds_vec[i])) {
-          ADEBUG << "Smoother fail at " << i
-                 << "th trajectory with index starts from 0";
+        case OpenSpaceTrajectoryOptimizerConfig::DISTANCE_APPROACH: {
+          const double start_system_timestamp =
+              std::chrono::duration<double>(
+                  std::chrono::system_clock::now().time_since_epoch())
+                  .count();
+          if (!GenerateDistanceApproachTraj(
+                  xWS_vec[i], uWS_vec[i], XYbounds, obstacles_edges_num,
+                  obstacles_A, obstacles_b, obstacles_vertices_vec, last_time_u,
+                  init_v, &state_result_ds_vec[i], &control_result_ds_vec[i],
+                  &time_result_ds_vec[i], &l_warm_up_vec[i], &n_warm_up_vec[i],
+                  &dual_l_result_ds_vec[i], &dual_n_result_ds_vec[i])) {
+            AERROR << "Smoother fail at " << i
+                   << "th trajectory with index starts from 0";
+            AERROR << i << "th trajectory size is " << xWS_vec[i].cols();
+            AERROR << "State matrix: " << xWS_vec[i];
+            AERROR << "Control matrix: " << uWS_vec[i];
+            return Status(
+                ErrorCode::PLANNING_ERROR,
+                "distance approach smoothing problem failed to solve");
+          }
+          const auto end_system_timestamp =
+              std::chrono::duration<double>(
+                  std::chrono::system_clock::now().time_since_epoch())
+                  .count();
+          const auto time_diff_ms =
+              (end_system_timestamp - start_system_timestamp) * 1000;
+          ADEBUG << "total planning time spend: " << time_diff_ms << " ms.";
           ADEBUG << i << "th trajectory size is " << xWS_vec[i].cols();
-          ADEBUG << "State matrix: " << xWS_vec[i];
-          ADEBUG << "Control matrix: " << uWS_vec[i];
-          return Status(ErrorCode::PLANNING_ERROR,
-                        "distance approach smoothing problem failed to solve");
+          ADEBUG << "average time spend: " << time_diff_ms / xWS_vec[i].cols()
+                 << " ms per point.";
+          ADEBUG << "average time spend after smooth: "
+                 << time_diff_ms / state_result_ds_vec[i].cols()
+                 << " ms per point.";
+          ADEBUG << i << "th smoothed trajectory size is "
+                 << state_result_ds_vec[i].cols();
+          break;
         }
-        const auto end_system_timestamp =
-            std::chrono::duration<double>(
-                std::chrono::system_clock::now().time_since_epoch())
-                .count();
-        const auto time_diff_ms =
-            (end_system_timestamp - start_system_timestamp) * 1000;
-        ADEBUG << "total planning time spend: " << time_diff_ms << " ms.";
-        ADEBUG << i << "th trajectory size is " << xWS_vec[i].cols();
-        ADEBUG << "average time spend: " << time_diff_ms / xWS_vec[i].cols()
-               << " ms per point.";
-        ADEBUG << "average time spend after smooth: "
-               << time_diff_ms / state_result_ds_vec[i].cols()
-               << " ms per point.";
-        ADEBUG << i << "th smoothed trajectory size is "
-               << state_result_ds_vec[i].cols();
+        case OpenSpaceTrajectoryOptimizerConfig::USE_WARM_START: {
+          UseWarmStartAsResult(xWS_vec[i], uWS_vec[i], l_warm_up_vec[i],
+                               n_warm_up_vec[i], &state_result_ds_vec[i],
+                               &control_result_ds_vec[i],
+                               &time_result_ds_vec[i], &dual_l_result_ds_vec[i],
+                               &dual_n_result_ds_vec[i]);
+          break;
+        }
       }
       const auto smoother_end_timestamp = std::chrono::system_clock::now();
       std::chrono::duration<double> smoother_diff =
@@ -552,7 +565,10 @@ bool OpenSpaceTrajectoryOptimizer::GenerateDistanceApproachTraj(
 
   Eigen::MatrixXd xF(4, 1);
   xF << xWS(0, horizon), xWS(1, horizon), xWS(2, horizon), xWS(3, horizon);
-
+  UseWarmStartAsResult(xWS, uWS, *l_warm_up, *n_warm_up, state_result_ds,
+                       control_result_ds, time_result_ds, dual_l_result_ds,
+                       dual_n_result_ds);
+  return true;
   // load vehicle configuration
   const common::VehicleParam& vehicle_param_ =
       common::VehicleConfigHelper::GetConfig().vehicle_param();
@@ -579,7 +595,7 @@ bool OpenSpaceTrajectoryOptimizer::GenerateDistanceApproachTraj(
             obstacles_b, xWS, l_warm_up, n_warm_up, &s_warm_up)) {
       ADEBUG << "Dual variable problem solved successfully!";
     } else {
-      ADEBUG << "Dual variable problem failed to solve";
+      AERROR << "Dual variable problem failed to solve";
       return false;
     }
   } else {
@@ -596,7 +612,7 @@ bool OpenSpaceTrajectoryOptimizer::GenerateDistanceApproachTraj(
           time_result_ds, dual_l_result_ds, dual_n_result_ds)) {
     ADEBUG << "Distance approach problem solved successfully!";
   } else {
-    ADEBUG << "Distance approach problem failed to solve";
+    AERROR << "Distance approach problem failed to solve";
     if (FLAGS_enable_smoother_failsafe) {
       UseWarmStartAsResult(xWS, uWS, *l_warm_up, *n_warm_up, state_result_ds,
                            control_result_ds, time_result_ds, dual_l_result_ds,

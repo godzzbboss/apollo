@@ -1,5 +1,6 @@
 load("@rules_cc//cc:defs.bzl", "cc_library", "cc_test")
 load("//tools:cpplint.bzl", "cpplint")
+load("//tools/platform:build_defs.bzl", "if_gpu")
 
 package(default_visibility = ["//visibility:public"])
 PREDICTION_COPTS = ["-DMODULE_NAME=\\\"prediction\\\""]
@@ -68,14 +69,17 @@ cc_library(
     hdrs = ["junction_mlp_evaluator.h"],
     copts = PREDICTION_FOPENMP_COPTS,
     deps = [
-        "//modules/common/math:geometry",
+        "//modules/common/math",
         "//modules/prediction/common:feature_output",
         "//modules/prediction/common:prediction_util",
         "//modules/prediction/container:container_manager",
         "//modules/prediction/container/obstacles:obstacles_container",
         "//modules/prediction/evaluator",
-        "//third_party:libtorch",
-    ],
+        #"//third_party/libtorch",
+    ]  + if_gpu(
+        ["@libtorch_gpu"],
+        ["@libtorch_cpu"],
+    ),
 )
 
 cc_test(
@@ -94,6 +98,7 @@ cc_test(
         "//modules/prediction/evaluator/vehicle:junction_mlp_evaluator",
         "@com_google_googletest//:gtest_main",
     ],
+    linkstatic = True,
 )
 
 cc_library(
@@ -106,8 +111,11 @@ cc_library(
         "//modules/prediction/common:semantic_map",
         "//modules/prediction/container/obstacles:obstacles_container",
         "//modules/prediction/evaluator",
-        "//third_party:libtorch",
-    ],
+        #"//third_party/libtorch",
+    ]  + if_gpu(
+        ["@libtorch_gpu"],
+        ["@libtorch_cpu"],
+    ),
 )
 
 cc_library(
@@ -120,8 +128,11 @@ cc_library(
         "//modules/prediction/container:container_manager",
         "//modules/prediction/container/obstacles:obstacles_container",
         "//modules/prediction/evaluator",
-        "//third_party:libtorch",
-    ],
+        #"//third_party/libtorch",
+    ]  + if_gpu(
+        ["@libtorch_gpu"],
+        ["@libtorch_cpu"],
+    ),
 )
 
 cc_test(
@@ -139,6 +150,7 @@ cc_test(
         "//modules/prediction/common:kml_map_based_test",
         "//modules/prediction/evaluator/vehicle:cruise_mlp_evaluator",
     ],
+    linkstatic = True,
 )
 
 cc_library(
@@ -150,8 +162,11 @@ cc_library(
         "//modules/prediction/container:container_manager",
         "//modules/prediction/container/obstacles:obstacles_container",
         "//modules/prediction/evaluator",
-        "//third_party:libtorch",
-    ],
+        #"//third_party/libtorch",
+    ] + if_gpu(
+        ["@libtorch_gpu"],
+        ["@libtorch_cpu"],
+    ),
 )
 
 cc_library(
@@ -163,8 +178,11 @@ cc_library(
         "//modules/prediction/container:container_manager",
         "//modules/prediction/container/obstacles:obstacles_container",
         "//modules/prediction/evaluator",
-        "//third_party:libtorch",
-    ],
+        #"//third_party/libtorch",
+    ]  + if_gpu(
+        ["@libtorch_gpu"],
+        ["@libtorch_cpu"],
+    ),
 )
 
 cc_library(
@@ -177,9 +195,12 @@ cc_library(
         "//modules/prediction/common:semantic_map",
         "//modules/prediction/container/obstacles:obstacles_container",
         "//modules/prediction/evaluator",
-        "//third_party:libtorch",
+        #"//third_party/libtorch",
         "@eigen",
-    ],
+    ] + if_gpu(
+        ["@libtorch_gpu"],
+        ["@libtorch_cpu"],
+    ),
 )
 
 cc_library(
@@ -193,9 +214,12 @@ cc_library(
         "//modules/prediction/container/obstacles:obstacles_container",
         "//modules/prediction/evaluator",
         "//modules/prediction/pipeline:vector_net",
-        "//third_party:libtorch",
+        #"//third_party/libtorch",
         "@eigen",
-    ],
+    ] + if_gpu(
+        ["@libtorch_gpu"],
+        ["@libtorch_cpu"],
+    ),
 )
 
 cc_library(
@@ -208,9 +232,12 @@ cc_library(
         "//modules/prediction/container/obstacles:obstacles_container",
         "//modules/prediction/evaluator",
         "//modules/prediction/pipeline:vector_net",
-        "//third_party:libtorch",
+        #"//third_party/libtorch",
         "@eigen",
-    ],
+    ] + if_gpu(
+        ["@libtorch_gpu"],
+        ["@libtorch_cpu"],
+    ),
 )
 
 cpplint()

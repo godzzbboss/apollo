@@ -1,10 +1,11 @@
 load("@rules_python//python:defs.bzl", "py_binary", "py_library")
+load("//tools/install:install.bzl", "install")
 
 package(default_visibility = ["//visibility:public"])
 
 filegroup(
     name = "config",
-    srcs = glob(["*.yaml"]),
+    srcs = glob(["*.yaml"]) + ["README.md"],
 )
 
 py_library(
@@ -13,7 +14,7 @@ py_library(
     deps = [
         "//cyber/python/cyber_py3:cyber",
         "//cyber/python/cyber_py3:record",
-        "//modules/drivers/proto:sensor_image_py_pb2",
+        "//modules/common_msgs/sensor_msgs:sensor_image_py_pb2",
     ],
 )
 
@@ -23,7 +24,7 @@ py_library(
     deps = [
         "//cyber/python/cyber_py3:cyber",
         "//cyber/python/cyber_py3:record",
-        "//modules/drivers/proto:pointcloud_py_pb2",
+        "//modules/common_msgs/sensor_msgs:pointcloud_py_pb2",
     ],
 )
 
@@ -33,7 +34,7 @@ py_library(
     deps = [
         "//cyber/python/cyber_py3:cyber",
         "//cyber/python/cyber_py3:record",
-        "//modules/drivers/proto:conti_radar_py_pb2",
+        "//modules/common_msgs/sensor_msgs:conti_radar_py_pb2",
     ],
 )
 
@@ -47,5 +48,15 @@ py_binary(
         ":parse_radar",
         "//cyber/python/cyber_py3:cyber",
         "//cyber/python/cyber_py3:record",
+    ],
+)
+
+install(
+    name = "install",
+    data = [":config"],
+    data_dest = "tools/record_parse_save",
+    py_dest = "tools/record_parse_save",
+    targets = [
+        ":record_parse_save",
     ],
 )
